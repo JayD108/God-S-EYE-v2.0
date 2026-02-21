@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>God's Eye — Omni Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Stylesheets (order matters) -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/panel.css">
+    <link rel="stylesheet" href="css/graph.css">
+</head>
+<body data-theme="dark">
+
+<!-- ─── LOADING OVERLAY ──────────────────────────────────────────── -->
+<div id="loader">
+    <div class="scan-rings">
+        <div class="scan-ring"></div>
+        <div class="scan-ring"></div>
+        <div class="scan-ring"></div>
+        <div class="scan-center"></div>
+    </div>
+    <div id="loader-text">NEURAL SCAN IN PROGRESS</div>
+    <div class="scan-bar"><div class="scan-bar-fill"></div></div>
+    <div id="loader-sub">CONSTRUCTING KNOWLEDGE GRAPH...</div>
+    <button id="cancel-scan-btn" onclick="cancelScan()">✕ CANCEL SCAN</button>
+</div>
+
+<!-- ─── FEEDBACK MODAL ───────────────────────────────────────────── -->
+<div id="feedback-modal">
+    <div class="feedback-box">
+        <div class="feedback-title">// INTELLIGENCE CORRECTION</div>
+        <div class="feedback-node-name" id="feedback-node-name">Node Name</div>
+        <div class="sources-section">
+            <div class="sources-title">// SOURCES USED FOR THIS NODE</div>
+            <div id="sources-list">
+                <div style="font-size:0.75rem;color:rgba(200,230,245,0.35);font-family:'Share Tech Mono',monospace;">No source data available.</div>
+            </div>
+        </div>
+        <div class="correction-section">
+            <div class="sources-title" style="margin-bottom:7px;">// YOUR CORRECTION</div>
+            <textarea class="correction-textarea" id="correction-text"
+                placeholder="Describe what is wrong and what the correct information is. The model will use this to improve future responses..."></textarea>
+        </div>
+        <div class="feedback-actions">
+            <button class="btn-submit-feedback" onclick="submitFeedback()">✓ SUBMIT CORRECTION</button>
+            <button class="btn-close-feedback"  onclick="closeFeedbackModal()">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── FEEDBACK TOAST ───────────────────────────────────────────── -->
+<div id="feedback-toast">✓ Correction submitted — model will adapt</div>
+
+<!-- ─── EXPAND POPUP ─────────────────────────────────────────────── -->
+<div id="expand-popup">
+    <div id="expand-popup-title">EXPAND: NODE</div>
+    <input id="expand-popup-input" type="text" placeholder="Specific query (optional)..." />
+    <div class="popup-btns">
+        <button class="btn-expand-go"    onclick="doExpand()">⊕ EXPAND</button>
+        <button class="btn-expand-quick" title="Quick expand" onclick="doQuickExpand()">+</button>
+        <button class="btn-expand-close" onclick="closeExpandPopup()">✕</button>
+    </div>
+</div>
+
+<!-- ─── HEADER ───────────────────────────────────────────────────── -->
+<header>
+    <div class="logo">👁 GOD'S EYE <span></span></div>
+    <input class="target-input" type="text" id="target" placeholder="Enter target entity..."
+           onkeydown="if(event.key==='Enter')initiateScan()"/>
+    <select class="mode-select" id="mode">
+        <option value="person">Deep Profile</option>
+        <option value="event">Event Analysis</option>
+        <option value="concept">Concept Map</option>
+    </select>
+    <button class="btn btn-scan" id="scan-btn" onclick="initiateScan()">▶ DEEP SCAN</button>
+    <button class="btn btn-clear" onclick="wipeDB()">✕ CLEAR</button>
+    <a href="SRM_v2.html" style="text-decoration:none;">
+        <button class="btn" style="background:linear-gradient(135deg,#4f8ef7,#a78bfa);color:#fff;box-shadow:0 0 14px rgba(79,142,247,0.3);">📚 SRM</button>
+    </a>
+    <div class="header-right">
+        <div class="status-lights">
+            <div class="status-light-item" title="Backend API status">
+                <div class="status-dot" id="dot-api"></div>
+                <span class="status-light-label">API</span>
+            </div>
+            <div class="status-light-item" title="Neo4j Database status">
+                <div class="status-dot" id="dot-db"></div>
+                <span class="status-light-label">DB</span>
+            </div>
+        </div>
+        <span id="status-text">READY</span>
+        <button class="btn btn-theme" onclick="toggleTheme()">☀/☾</button>
+    </div>
+</header>
+
+<!-- ─── MAIN ─────────────────────────────────────────────────────── -->
+<div class="main-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="tabs-header" id="tabs-header">
+            <button class="tab-btn active" data-tab="controls"  onclick="switchTab('controls',this)">CONTROLS</button>
+            <button class="tab-btn"        data-tab="node-info" onclick="switchTab('node-info',this)">NODE INFO</button>
+        </div>
+        <div class="tabs-content">
+
+            <!-- CONTROLS TAB -->
+            <div class="tab-pane active" id="tab-pane-controls">
+                <div class="query-label">// LEGEND</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ff2d6b;box-shadow:0 0 8px #ff2d6b"></div>Central Entity</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#ffd700;box-shadow:0 0 6px #ffd700"></div>Category Node</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#00ffe1"></div>Sub-Entity</div>
+                <div class="legend-item"><div class="legend-dot" style="background:#7c83db"></div>Expanded Node</div>
+                <div class="node-count-badge">◉ <span id="node-count">0 nodes</span> · <span id="edge-count">0 edges</span></div>
+
+                <div class="filter-section">
+                    <div class="filter-title">// FILTER VIEW</div>
+                    <button class="filter-btn active" id="filter-all"     onclick="filterGraph('all')">ALL NODES</button>
+                    <button class="filter-btn"        id="filter-central" onclick="filterGraph('Central')">CENTRAL ONLY</button>
+                    <button class="filter-btn"        id="filter-cat"     onclick="filterGraph('Category')">CATEGORIES</button>
+                    <button class="filter-btn"        id="filter-ent"     onclick="filterGraph('Entity')">ENTITIES</button>
+                </div>
+
+                <div class="filter-section" style="margin-top:18px;">
+                    <div class="filter-title">// PHYSICS</div>
+                    <button class="filter-btn" id="toggle-physics" onclick="togglePhysics()">⚙ PHYSICS: ON</button>
+                    <button class="filter-btn" onclick="network&&network.fit()">⊞ FIT VIEW</button>
+                </div>
+
+                <div class="filter-section" style="margin-top:18px;">
+                    <div class="filter-title">// RELATIONSHIP FINDER</div>
+                    <button class="filter-btn" id="select-mode-btn" onclick="toggleSelectMode()">⬡ SELECT MODE: OFF</button>
+                    <div id="selected-nodes-display" style="font-size:0.7rem;font-family:Share Tech Mono,monospace;color:rgba(200,230,245,0.4);margin:6px 0;min-height:18px;line-height:1.5;"></div>
+                    <button class="filter-btn" id="find-relation-btn"  onclick="findRelationship()" style="display:none;background:rgba(0,255,225,0.08);border-color:var(--accent);color:var(--accent);">🔗 FIND RELATIONSHIP</button>
+                    <button class="filter-btn" id="clear-sel-btn"      onclick="clearSelection()"   style="display:none;color:var(--accent2);border-color:rgba(255,45,107,0.35);">✕ CLEAR SELECTION</button>
+                </div>
+
+                <div class="filter-section" style="margin-top:18px;">
+                    <div class="filter-title">// EDGE LENGTH = PRIORITY</div>
+                    <div style="font-size:0.7rem;line-height:1.6;color:rgba(200,230,245,0.5);">
+                        Shorter edge = stronger connection to root. Central↔Category: 120px. Category↔Entity: 145px. Entity↔Entity: 165px.
+                    </div>
+                </div>
+            </div>
+
+            <!-- NODE INFO TAB -->
+            <div class="tab-pane" id="tab-pane-node-info">
+                <div id="node-title">Select a node</div>
+                <div id="node-type-badge" style="background:rgba(0,255,225,0.1);color:var(--accent)">—</div>
+                <div id="node-content" style="margin-top:12px;font-size:0.79rem;line-height:1.7;opacity:0.75;">
+                    Click any node in the graph to view its intelligence report.
+                </div>
+                <div id="expand-section">
+                    <div class="filter-title" style="margin-bottom:7px;">// EXPAND THIS NODE</div>
+                    <input id="expand-query-input" type="text" placeholder="Custom query (optional)..."/>
+                    <div style="display:flex;gap:7px;margin-top:6px;">
+                        <button class="btn btn-scan" style="flex:1;padding:6px;font-size:0.75rem;" onclick="expandFromPanel()">⊕ EXPAND</button>
+                    </div>
+                </div>
+
+                <div class="rating-section" id="rating-section" style="display:none;">
+                    <div class="filter-title" style="margin-bottom:8px;">// RATE THIS INTEL</div>
+                    <div class="rating-row">
+                        <button class="star-btn" data-star="1" onclick="setRating(1)">★</button>
+                        <button class="star-btn" data-star="2" onclick="setRating(2)">★</button>
+                        <button class="star-btn" data-star="3" onclick="setRating(3)">★</button>
+                        <button class="star-btn" data-star="4" onclick="setRating(4)">★</button>
+                        <button class="star-btn" data-star="5" onclick="setRating(5)">★</button>
+                        <span class="rating-label" id="rating-label">unrated</span>
+                    </div>
+                    <button class="filter-btn" style="color:var(--accent2);border-color:rgba(255,45,107,0.35);" onclick="openFeedbackModal()">
+                        ⚑ REPORT INCORRECT INFO
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GRAPH CANVAS -->
+    <div class="graph-area">
+        <div id="network"></div>
+        <div class="graph-controls">
+            <button class="graph-ctrl-btn" onclick="zoomIn()">+</button>
+            <button class="graph-ctrl-btn" onclick="zoomOut()">−</button>
+            <button class="graph-ctrl-btn" onclick="network&&network.fit()">⊞</button>
+        </div>
+        <div class="stats-bar" id="stats-bar">NODES: 0 | EDGES: 0 | CLICK NODE TO EXPAND</div>
+    </div>
+</div>
+
+<!-- ─── RELATIONSHIP FINDER MODAL ────────────────────────────────── -->
+<div id="rel-modal">
+    <div class="rel-box">
+        <div class="rel-title">// RELATIONSHIP ANALYSIS</div>
+        <div class="rel-subtitle" id="rel-subtitle"></div>
+        <div id="rel-content"><div class="rel-loading">ANALYZING CONNECTIONS…</div></div>
+        <div style="margin-top:18px;text-align:right;">
+            <button class="btn btn-clear" style="font-size:0.75rem;" onclick="closeRelModal()">✕ CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SCRIPTS (order matters — dependencies first) ─────────────── -->
+<script src="js/graph.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/feedback.js"></script>
+<script src="js/relationship.js"></script>
+
+<script>
+    // Bootstrap
+    window.addEventListener('load', function() {
+        initNetwork();
+        fetchGraph();
+        checkHealth();
+    });
+</script>
+
+</body>
+</html>

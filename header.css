@@ -1,0 +1,52 @@
+/* ─── HEADER ─────────────────────────────────────────────────────── */
+header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 18px;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    flex-shrink: 0; position: relative; z-index: 100;
+}
+.logo {
+    font-family: 'Share Tech Mono', monospace; font-size: 1.25rem;
+    color: var(--accent); text-shadow: 0 0 12px var(--accent);
+    white-space: nowrap; letter-spacing: 2px;
+}
+.logo span { color: var(--accent2); }
+.target-input {
+    flex: 1; max-width: 300px; padding: 7px 13px;
+    background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.83rem; outline: none;
+}
+.target-input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0,255,225,0.18); }
+.target-input::placeholder { color: rgba(200,230,245,0.3); }
+select.mode-select {
+    padding: 7px 11px; background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border); color: var(--text);
+    border-radius: 6px; font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem; outline: none; cursor: pointer;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────────── */
+.btn {
+    padding: 7px 16px; border: none; border-radius: 6px;
+    font-family: 'Exo 2', sans-serif; font-weight: 700;
+    font-size: 0.8rem; cursor: pointer; text-transform: uppercase;
+    letter-spacing: 1px; transition: all 0.2s;
+}
+.btn-scan  { background: var(--accent); color: #030608; box-shadow: 0 0 14px rgba(0,255,225,0.3); }
+.btn-scan:hover { filter: brightness(1.15); }
+.btn-scan:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-clear { background: transparent; color: var(--accent2); border: 1px solid rgba(255,45,107,0.4); }
+.btn-clear:hover { background: rgba(255,45,107,0.1); }
+.btn-theme { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 7px 11px; }
+
+/* ─── HEADER RIGHT ───────────────────────────────────────────────── */
+.header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.status-lights { display: flex; align-items: center; gap: 10px; }
+.status-light-item { display: flex; align-items: center; gap: 5px; }
+.status-light-label { font-family: 'Share Tech Mono',monospace; font-size: 0.62rem; color: rgba(200,230,245,0.35); letter-spacing: 0.5px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #333; transition: background 0.4s, box-shadow 0.4s; }
+.status-dot.green  { background: #00ffe1; box-shadow: 0 0 8px #00ffe1; animation: pulse-anim 2s infinite; }
+.status-dot.red    { background: #ff2d6b; box-shadow: 0 0 8px #ff2d6b; }
+.status-dot.yellow { background: var(--accent3); box-shadow: 0 0 8px var(--accent3); animation: pulse-anim 0.6s infinite; }
+#status-text { font-family: 'Share Tech Mono',monospace; font-size: 0.7rem; color: rgba(200,230,245,0.4); }

@@ -1,0 +1,37 @@
+/* ─── CSS VARIABLES ──────────────────────────────────────────────── */
+:root {
+    --bg: #03060d;
+    --surface: #070d17;
+    --panel: rgba(7,13,23,0.97);
+    --accent: #00ffe1;
+    --accent2: #ff2d6b;
+    --accent3: #ffd700;
+    --text: #c8e6f5;
+    --border: rgba(0,255,225,0.18);
+    --tab-active: #00ffe1;
+}
+[data-theme="light"] {
+    --bg: #eef2f7; --surface: #ffffff; --panel: rgba(255,255,255,0.97);
+    --accent: #0066cc; --accent2: #cc0033; --accent3: #cc8800;
+    --text: #1a2535; --border: rgba(0,102,204,0.25); --tab-active: #0066cc;
+}
+
+/* ─── RESET & BASE ───────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    height: 100vh; overflow: hidden;
+    display: flex; flex-direction: column;
+}
+body::before {
+    content: ''; position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px,
+        rgba(0,255,225,0.01) 2px, rgba(0,255,225,0.01) 4px);
+    pointer-events: none; z-index: 9000;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────── */
+@keyframes pulse-anim { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes spin        { to { transform: rotate(360deg); } }
+@keyframes sweep       { 0%{transform:translateX(-100%)} 100%{transform:translateX(400%)} }
