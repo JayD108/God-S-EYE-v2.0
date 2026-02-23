@@ -119,6 +119,6 @@ This ecosystem is designed to intelligently distribute the workload across your 
 • This means if you host the backend on a powerful PC, you can access the frontend from a low-end laptop or tablet, and it will still run perfectly smoothly.
 
 Devs:
-Mrittunjay Dubey 
-Haardik Dave
+Mrittunjay Dubey ,
+Haardik Dave ,
 Prince Siddharth 
