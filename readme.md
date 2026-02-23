@@ -81,3 +81,39 @@ This repository houses a dual-engine architecture powered entirely by **Local AI
 * **Self-Healing Data:** Built-in Pydantic validators and `dirtyjson` parsers automatically fix AI hallucinations and malformed JSON.
 * **Dynamic Physics Visualization:** Frontend powered by `vis-network` where high-priority relationships physically pull nodes closer together.
 * **Recursive Expansion:** Right-click any node in the graph to instantly "Expand" it, triggering a targeted sub-scan to grow your intelligence web infinitely.
+
+
+
+💻 Hardware Requirements & Hardware Utilization
+Because God's Eye and StudyMind rely entirely on Local AI Models to process massive amounts of text and generate complex graph structures, your hardware dictates the speed and intelligence of the system.
+System Requirements
+Minimum Specs (Runs Okay, but slower):
+• OS: Windows 10/11, macOS (M1/M2), or Linux
+• CPU: Modern 6-core+ processor (Intel i5/Ryzen 5 or Apple Silicon)
+• RAM: 16 GB System Memory
+• GPU: 8 GB VRAM (e.g., RTX 3060, RTX 4060)
+• Storage: SSD (Required for fast Neo4j database read/writes)
+
+Recommended "God-Tier" Specs (For instant, real-time generation):
+• OS: Windows 11 or Linux
+• CPU: Modern 8-core+ processor (Intel i7/Ryzen 7)
+• RAM: 32 GB System Memory
+• GPU: 16 GB+ VRAM (e.g., RTX 5080, RTX 4080, RTX 3090, or Mac M-series with 32GB+ Unified Memory)
+• Model Used: Custom optimized gemma-flash (Based on Gemma 2 9B) or deepseek-gpu (Based on DeepSeek R1 14B).
+
+
+How It Uses Your System (Under the Hood)
+This ecosystem is designed to intelligently distribute the workload across your machine's components:
+
+1. The VRAM Heavy-Lifter (Ollama & The GPU):
+• The core AI reasoning (reading web pages, structuring JSON, generating node connections) is extremely compute-heavy.
+• Custom GPU Offloading: We utilize a custom Ollama Modelfile with the parameter num_gpu 999. This forces the system to load 100% of the AI model's layers directly into your GPU's high-speed VRAM, preventing bottlenecking between the CPU and System RAM.
+• On a 16GB VRAM GPU (like the RTX 5080), a 9B to 14B parameter model fits perfectly, resulting in lightning-fast, sub-10-second graph generation.
+
+2. The CPU & Disk Manager (Neo4j & FastAPI):
+• The Python FastAPI backend uses your CPU to orchestrate concurrent web scraping via DuckDuckGo and parse the raw data.
+• The Neo4j Graph Database utilizes your storage drive (SSD highly recommended) to permanently structure and write the nodes and edges. Indexes and constraints are applied at the database level to ensure queries remain fast even when the graph scales to thousands of nodes.
+
+3. The Browser Renderer (vis-network):
+• The interactive physics simulation (where nodes pull and push against each other based on relationship "weights") is rendered on the client side.
+• This means if you host the backend on a powerful PC, you can access the frontend from a low-end laptop or tablet, and it will still run perfectly smoothly.
